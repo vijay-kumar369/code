@@ -1,1 +1,37 @@
+pipeline{
+  agent  {
+        docker {
+              image: 'maven:latests'
+        }
+    }
+  environment {
+            azure_webapp_publish_profile = credentialsId('holographlabapp-vijay - Web Deploy')
+    }
+  stages  {
+    stage('Checkout code') {
+            steps {
+                git 'https://github.com/vijay-kumar369/code/edit/main/Code'
+            }
+        }
+        stage('build')  {
+          script {
+                  sh 'mvn clean package'
+                }
+              }
+  stage ('upload build artifact') {
+        steps {
+              archiveArtifacts artifacts: 'target/*.war'
+            }
+      }
+  stage('Deploy') {
+            steps {
+                    azureWebAppPublishProfile(
+                    publishProfileCredentials: '',
+                    resourceGroup: '',
+                    appName: 'webapp',
+                    slotName: 'production'
+                )
 
+
+      
+          
